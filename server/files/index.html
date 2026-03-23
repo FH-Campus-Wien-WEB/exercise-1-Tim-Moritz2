@@ -6,20 +6,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movies!</title>
     <style>
-        /* Part 3: Your styling goes here */
-    </style>
-    <script>
-        function reverseString(s) {
-            return s.split("").reverse().join("");
+         body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
         }
 
+        article {
+            background: white;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        img {
+            max-width: 200px;
+            border-radius: 10px;
+        }
+
+        .genre {
+            background: lightblue;
+            padding: 5px;
+            margin-right: 5px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+    </style>
+
+    <script>
         window.onload = function () {
             const xhr = new XMLHttpRequest()
             xhr.onload = function () {
                 const bodyElement = document.querySelector("body")
                 if (xhr.status == 200) {
 		            /* Part 2: Build the HTML elements here and append them to the body */ 
-                    bodyElement.append(reverseString(xhr.responseText))
+                    const movies = JSON.parse(xhr.responseText);
+
+                    movies.forEach(movie => {
+                        
+                        const article = document.createElement("article");
+
+                        const title = document.createElement("h1");
+                        title.textContent = movie.title;
+
+                        const img = document.createElement("img");
+                        img.src = movie.poster;
+
+                        const plot = document.createElement("p");
+                        plot.textContent = movie.plot;
+
+                        const genresDiv = document.createElement("div");
+                        movie.genres.forEach(g => {
+                            const span = document.createElement("span");
+                            span.textContent = g;
+                            span.classList.add("genre");
+                            genresDiv.append(span);
+                        });
+
+                        const info = document.createElement("p");
+                        info.textContent =
+                            "Released: " + movie.released +
+                            " | Runtime: " + movie.runtime + " min" +
+                            " | IMDb: " + movie.imdbRating +
+                            " | Metascore: " + movie.metascore;
+
+                        const crew = document.createElement("p");
+                        crew.textContent =
+                            "Director: " + movie.directors.join(", ") +
+                            " | Writer: " + movie.writers.join(", ");
+
+                        const actors = document.createElement("p");
+                        actors.textContent = "Actors: " + movie.actors.join(", ");
+
+                        article.append(title, img, plot, genresDiv, info, crew, actors);
+                        bodyElement.append(article);
+                    })
+
                 } else {
                     bodyElement.append("Daten konnten nicht geladen werden, Status " + xhr.status + " - " + xhr.statusText)
                 }
